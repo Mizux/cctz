@@ -2,10 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(cctz)
 
-set(CMAKE_MODULE_PATH
-  ${PROJECT_SOURCE_DIR}/cmake
-  ${PROJECT_SOURCE_DIR}/cmake/modules
-  ${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 include(CTest)
 include(FeatureSummary)

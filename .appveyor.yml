@@ -1,0 +1,35 @@
+version: '{build}'
+shallow_clone: true
+
+platform: x64
+
+environment:
+  MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
+  matrix:
+# CMake
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    VS: 2017
+    CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    VS: 2015
+    CMAKE_GENERATOR: "Visual Studio 14 2015 Win64"
+
+matrix:
+  fast_finish: false
+
+before_build:
+  # see https://www.appveyor.com/docs/lang/cpp/#visual-studio-2017
+  - if "%VS%"=="2017" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+  # see https://www.appveyor.com/docs/lang/cpp/#visual-studio-2015
+  - if "%VS%"=="2015" call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
+  - if "%VS%"=="2015" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+
+build_script:
+  - cmake --version
+  - cmake -H. -Bcmake_build -DBUILD_TESTING:BOOL=OFF -DCMAKE_INSTALL_PREFIX=install -G "%CMAKE_GENERATOR%"
+  - cmake --build cmake_build --config Release --target ALL_BUILD -- %MSBUILD_FLAGS%
+
+test_script:
+  - cmake --build cmake_build --config Release --target install
+

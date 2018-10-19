@@ -1,0 +1,21 @@
+sudo: false
+language: cpp
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      compiler: gcc
+    - os: osx
+      osx_image: xcode9.4
+      compiler: clang
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+
+script:
+  - cmake --version
+  - cmake -H. -Bcmake_build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING:BOOL=OFF
+  - cmake --build cmake_build --target all
+  # Test Install rules
+  - cmake --build cmake_build --target install -- DESTDIR=install
